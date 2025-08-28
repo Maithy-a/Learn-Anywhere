@@ -9,7 +9,7 @@ Features:
 - 10-question multiple choice quizzes
 - Auto-scoring with feedback
 - Local data storage with SQLite
-- Study mode with flashcards
+- Study mode with flashcards and subject notes
 - Export results to CSV for teachers
 
 Author: LearnAnywhere Team
@@ -506,69 +506,63 @@ class LearnAnywhereApp:
         )
         return_btn.pack(pady=30)
     
+    # ==================== STUDY MODE: FULLY UPGRADED ====================
+    
     def show_study_mode(self):
-        """Display study mode with flashcards"""
+        """Display Study Mode with Flashcards or Notes choice"""
         self.clear_screen()
-        
-        # Study mode title
+
         title_label = tk.Label(
             self.main_frame,
-            text="💡 Study Mode - Flashcards",
-            font=("Arial", 22, "bold"),
+            text="📘 Study Mode",
+            font=("Arial", 24, "bold"),
             fg="#2c3e50",
             bg="#f0f8ff"
         )
-        title_label.pack(pady=20)
-        
-        # Load flashcards
-        flashcards = self.load_flashcards()
-        
-        if not flashcards:
-            no_cards_label = tk.Label(
-                self.main_frame,
-                text="📝 No flashcards available yet!",
-                font=("Arial", 16),
-                fg="#7f8c8d",
-                bg="#f0f8ff"
-            )
-            no_cards_label.pack(pady=50)
-        else:
-            # Flashcards container
-            cards_frame = tk.Frame(self.main_frame, bg="#f0f8ff")
-            cards_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-            
-            # Display flashcards
-            for i, card in enumerate(flashcards):
-                card_frame = tk.Frame(cards_frame, bg="#ffffff", relief=tk.RAISED, bd=2)
-                card_frame.pack(fill=tk.X, pady=10)
-                
-                term_label = tk.Label(
-                    card_frame,
-                    text=f"📌 {card['term']}:",
-                    font=("Arial", 14, "bold"),
-                    fg="#e74c3c",
-                    bg="#ffffff",
-                    anchor="w"
-                )
-                term_label.pack(fill=tk.X, padx=15, pady=(10, 5))
-                
-                definition_label = tk.Label(
-                    card_frame,
-                    text=card['definition'],
-                    font=("Arial", 12),
-                    fg="#34495e",
-                    bg="#ffffff",
-                    anchor="w",
-                    wraplength=700,
-                    justify=tk.LEFT
-                )
-                definition_label.pack(fill=tk.X, padx=15, pady=(5, 10))
-        
+        title_label.pack(pady=30)
+
+        subtitle_label = tk.Label(
+            self.main_frame,
+            text="Choose how you'd like to study",
+            font=("Arial", 14),
+            fg="#7f8c8d",
+            bg="#f0f8ff"
+        )
+        subtitle_label.pack(pady=10)
+
+        # Choice buttons
+        choices_frame = tk.Frame(self.main_frame, bg="#f0f8ff")
+        choices_frame.pack(pady=40)
+
+        flashcards_btn = tk.Button(
+            choices_frame,
+            text="🃏 Flashcards",
+            font=("Arial", 16, "bold"),
+            bg="#e74c3c",
+            fg="white",
+            width=20,
+            height=2,
+            command=self.show_flashcards_choice
+        )
+        flashcards_btn.grid(row=0, column=0, padx=30, pady=20)
+
+        notes_btn = tk.Button(
+            choices_frame,
+            text="📓 Notes",
+            font=("Arial", 16, "bold"),
+            bg="#3498db",
+            fg="white",
+            width=20,
+            height=2,
+            command=self.show_notes_choice
+        )
+        notes_btn.grid(row=0, column=1, padx=30, pady=20)
+
         # Back button
         back_btn = tk.Button(
             self.main_frame,
             text="🔙 Back to Subjects",
-            font=("Arial", 12, "bold"),
+            font=("Arial", 12),
             bg="#95a5a6",
             fg="white",
             command=self.show_subject_selection,
@@ -576,6 +570,199 @@ class LearnAnywhereApp:
             pady=8
         )
         back_btn.pack(pady=20)
+
+    def show_flashcards_choice(self):
+        """Let user pick subject for flashcards"""
+        self.clear_screen()
+
+        title_label = tk.Label(
+            self.main_frame,
+            text="🃏 Flashcards",
+            font=("Arial", 22, "bold"),
+            fg="#e74c3c",
+            bg="#f0f8ff"
+        )
+        title_label.pack(pady=20)
+
+        tk.Label(
+            self.main_frame,
+            text="Select a subject:",
+            font=("Arial", 14),
+            bg="#f0f8ff"
+        ).pack(pady=10)
+
+        subjects_frame = tk.Frame(self.main_frame, bg="#f0f8ff")
+        subjects_frame.pack(pady=20)
+
+        for subject in ["math", "english", "science", "kiswahili"]:
+            btn = tk.Button(
+                subjects_frame,
+                text=f"{subject.title()}",
+                font=("Arial", 14),
+                bg="#f8f9fa",
+                fg="#2c3e50",
+                width=15,
+                command=lambda s=subject: self.display_flashcards(s)
+            )
+            btn.pack(pady=8)
+
+        self.add_back_button(self.show_study_mode)
+
+    def display_flashcards(self, subject):
+        """Display all flashcards (currently all from CSV)"""
+        self.clear_screen()
+
+        title_label = tk.Label(
+            self.main_frame,
+            text=f"🃏 Flashcards: {subject.title()}",
+            font=("Arial", 20, "bold"),
+            fg="#e74c3c",
+            bg="#f0f8ff"
+        )
+        title_label.pack(pady=20)
+
+        flashcards = self.load_flashcards()
+        if not flashcards:
+            no_cards_label = tk.Label(
+                self.main_frame,
+                text="No flashcards available.",
+                font=("Arial", 14),
+                fg="#7f8c8d",
+                bg="#f0f8ff"
+            )
+            no_cards_label.pack(pady=50)
+        else:
+            canvas = tk.Canvas(self.main_frame, bg="#f0f8ff")
+            scrollbar = ttk.Scrollbar(self.main_frame, orient="vertical", command=canvas.yview)
+            scrollable_frame = tk.Frame(canvas, bg="#f0f8ff")
+
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
+
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            for card in flashcards:
+                card_frame = tk.Frame(scrollable_frame, bg="white", relief=tk.RAISED, bd=2)
+                card_frame.pack(fill=tk.X, pady=8, padx=20)
+
+                term_label = tk.Label(
+                    card_frame,
+                    text=f"🔹 {card['term']}",
+                    font=("Arial", 13, "bold"),
+                    fg="#e74c3c",
+                    bg="white",
+                    anchor="w"
+                )
+                term_label.pack(fill=tk.X, padx=15, pady=5)
+
+                def_label = tk.Label(
+                    card_frame,
+                    text=card['definition'],
+                    font=("Arial", 11),
+                    fg="#34495e",
+                    bg="white",
+                    anchor="w",
+                    wraplength=700,
+                    justify=tk.LEFT
+                )
+                def_label.pack(fill=tk.X, padx=15, pady=(5, 10))
+
+            canvas.pack(side="left", fill="both", expand=True, padx=20, pady=20)
+            scrollbar.pack(side="right", fill="y")
+
+        self.add_back_button(self.show_flashcards_choice)
+
+    def show_notes_choice(self):
+        """Let user pick subject for notes"""
+        self.clear_screen()
+
+        title_label = tk.Label(
+            self.main_frame,
+            text="📓 Study Notes",
+            font=("Arial", 22, "bold"),
+            fg="#3498db",
+            bg="#f0f8ff"
+        )
+        title_label.pack(pady=20)
+
+        tk.Label(
+            self.main_frame,
+            text="Select a subject to read notes:",
+            font=("Arial", 14),
+            bg="#f0f8ff"
+        ).pack(pady=10)
+
+        subjects_frame = tk.Frame(self.main_frame, bg="#f0f8ff")
+        subjects_frame.pack(pady=20)
+
+        for subject in ["math", "science", "english", "kiswahili"]:
+            btn = tk.Button(
+                subjects_frame,
+                text=f"{subject.title()}",
+                font=("Arial", 14),
+                bg="#f8f9fa",
+                fg="#2c3e50",
+                width=15,
+                command=lambda s=subject: self.show_notes(s)
+            )
+            btn.pack(pady=8)
+
+        self.add_back_button(self.show_study_mode)
+
+    def show_notes(self, subject):
+        """Display notes for selected subject"""
+        self.clear_screen()
+
+        title_label = tk.Label(
+            self.main_frame,
+            text=f"📓 Notes: {subject.title()}",
+            font=("Arial", 20, "bold"),
+            fg="#3498db",
+            bg="#f0f8ff"
+        )
+        title_label.pack(pady=20)
+
+        filename = f"study_mode/notes/{subject.lower()}_notes.txt"
+        try:
+            with open(filename, 'r', encoding='utf-8') as file:
+                content = file.read()
+        except FileNotFoundError:
+            content = f"Notes for {subject.title()} not available yet."
+
+        text_widget = tk.Text(
+            self.main_frame,
+            wrap=tk.WORD,
+            font=("Arial", 12),
+            bg="white",
+            fg="#34495e",
+            padx=20,
+            pady=10,
+            height=20
+        )
+        text_widget.insert(tk.END, content)
+        text_widget.config(state=tk.DISABLED)  # Make read-only
+        text_widget.pack(fill=tk.BOTH, expand=True, padx=40, pady=20)
+
+        self.add_back_button(self.show_notes_choice)
+
+    def add_back_button(self, command):
+        """Add a consistent back button"""
+        back_btn = tk.Button(
+            self.main_frame,
+            text="🔙 Back",
+            font=("Arial", 12),
+            bg="#95a5a6",
+            fg="white",
+            command=command,
+            padx=15,
+            pady=8
+        )
+        back_btn.pack(pady=15)
+    
+    # ==================== OTHER FEATURES ====================
     
     def load_flashcards(self):
         """Load flashcards from CSV file"""
@@ -610,7 +797,7 @@ class LearnAnywhereApp:
             file_path = filedialog.asksaveasfilename(
                 defaultextension=".csv",
                 filetypes=[("CSV files", "*.csv")],
-                initialvalue="quiz_results.csv"
+                initialfile="quiz_results.csv"
             )
             
             if file_path:
@@ -639,6 +826,7 @@ def main():
     os.makedirs("quizzes", exist_ok=True)
     os.makedirs("data", exist_ok=True)
     os.makedirs("study_mode", exist_ok=True)
+    os.makedirs("study_mode/notes", exist_ok=True)  # Create notes folder
     
     # Create and run the application
     root = tk.Tk()
