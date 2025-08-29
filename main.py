@@ -165,7 +165,7 @@ class LearnAnywhereApp:
         subjects = {
             "Grade 1": [("🔢 Number Work", "number_work"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
             "Grade 2": [("🔢 Number Work", "number_work"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
-            "Grade 3": [("🧮 Mathematical Activities", "mathematical_activities"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
+            "Grade 3": [("🧮 Number Work", "number_work"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
             "Grade 4": [
     ("🧮 Mathematics", "mathematics"),
     ("📚 English", "english"),
@@ -655,18 +655,23 @@ class LearnAnywhereApp:
             bg="#f0f8ff"
         ).pack(pady=20)
         
-        file_path = f"study_mode/flashcards/{self.student_grade.lower().replace(' ', '_')}_flashcards.csv"
+        # 🔧 Fixed: Look for subject-specific file in grade folder
+        file_path = f"study_mode/flashcards/{self.student_grade.lower().replace(' ', '_')}/{subject}.csv"
+        
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 reader = csv.DictReader(file)
-                flashcards = [row for row in reader]
-        except:
+                flashcards = list(reader)
+        except FileNotFoundError:
             flashcards = []
-        
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not load flashcards: {str(e)}")
+            flashcards = []
+
         if not flashcards:
             no_label = tk.Label(
                 self.main_frame,
-                text="No flashcards available.",
+                text=f"No flashcards available for {subject.replace('_', ' ').title()}.",
                 font=("Arial", 14),
                 fg="#7f8c8d",
                 bg="#f0f8ff"
@@ -713,7 +718,6 @@ class LearnAnywhereApp:
             scrollbar.pack(side="right", fill="y")
         
         self.add_back_button(self.show_flashcards_choice)
-
     def show_notes_choice(self):
         self.clear_screen()
         tk.Label(
