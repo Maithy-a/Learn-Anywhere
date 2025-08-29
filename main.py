@@ -167,69 +167,70 @@ class LearnAnywhereApp:
             "Grade 2": [("🔢 Number Work", "number_work"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
             "Grade 3": [("🧮 Number Work", "number_work"), ("📚 Language Activities", "language_activities"), ("🌍 Environmental Activities", "environmental_activities")],
             "Grade 4": [
-    ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Science & Technology", "science_technology"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre")
-],
-           "Grade 5": [
-    ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Science & Technology", "science_technology"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre"),
-    ("☪️ IRE", "ire")
-],
-            "Grade 6": [ ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Science & Technology", "science_technology"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre"),
-    ("☪️ IRE", "ire")
-],
-          "Grade 7": [
-    ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Integrated Science", "integrated_science"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre"),
-    ("☪️ IRE", "ire")
-],
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Science & Technology", "science_technology"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre")
+            ],
+            "Grade 5": [
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Science & Technology", "science_technology"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre"),
+                ("☪️ IRE", "ire")
+            ],
+            "Grade 6": [
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Science & Technology", "science_technology"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre"),
+                ("☪️ IRE", "ire")
+            ],
+            "Grade 7": [
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Integrated Science", "integrated_science"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre"),
+                ("☪️ IRE", "ire")
+            ],
             "Grade 8": [
-    ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Integrated Science", "integrated_science"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre"),
-    ("☪️ IRE", "ire")
-],
-           "Grade 9": [
-    ("🧮 Mathematics", "mathematics"),
-    ("📚 English", "english"),
-    ("📖 Kiswahili", "kiswahili"),
-    ("🔬 Integrated Science", "integrated_science"),
-    ("🌍 Social Studies", "social_studies"),
-    ("🌱 Agriculture", "agriculture"),
-    ("🎨 Creative Arts", "creative_arts"),
-    ("✝️ CRE", "cre"),
-    ("☪️ IRE", "ire")
-],
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Integrated Science", "integrated_science"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre"),
+                ("☪️ IRE", "ire")
+            ],
+            "Grade 9": [
+                ("🧮 Mathematics", "mathematics"),
+                ("📚 English", "english"),
+                ("📖 Kiswahili", "kiswahili"),
+                ("🔬 Integrated Science", "integrated_science"),
+                ("🌍 Social Studies", "social_studies"),
+                ("🌱 Agriculture", "agriculture"),
+                ("🎨 Creative Arts", "creative_arts"),
+                ("✝️ CRE", "cre"),
+                ("☪️ IRE", "ire")
+            ],
         }
         return subjects.get(grade, [("Math", "math"), ("English", "english")])
     
@@ -302,7 +303,7 @@ class LearnAnywhereApp:
                 height=2,
                 command=lambda s=subject: self.start_quiz(s)
             )
-            btn.grid(row=row, column=col, padx=25, pady=12)  # Increased padx/pady for spacing
+            btn.grid(row=row, column=col, padx=25, pady=12)
 
         # Additional options
         options_frame = tk.Frame(scrollable_frame, bg="#f0f8ff")
@@ -343,6 +344,7 @@ class LearnAnywhereApp:
             pady=5
         )
         logout_btn.pack(side=tk.LEFT, padx=10)
+
     # ==================== QUIZ MODE ====================
     def load_quiz_questions(self, subject):
         """Load quiz questions from CSV file by grade and subject"""
@@ -439,7 +441,22 @@ class LearnAnywhereApp:
         # Navigation buttons
         nav_frame = tk.Frame(question_frame, bg="#ffffff")
         nav_frame.pack(pady=20)
-        
+
+        # Back Button (disabled on first question)
+        back_btn = tk.Button(
+            nav_frame,
+            text="🔙 Back",
+            font=("Arial", 12),
+            bg="#95a5a6",
+            fg="white",
+            command=self.previous_question,
+            state="normal" if self.current_question_index > 0 else "disabled",
+            padx=15,
+            pady=8
+        )
+        back_btn.grid(row=0, column=0, padx=10)
+
+        # Next / Finish Button
         if self.current_question_index < len(self.quiz_questions) - 1:
             next_btn = tk.Button(
                 nav_frame,
@@ -462,8 +479,20 @@ class LearnAnywhereApp:
                 padx=20,
                 pady=10
             )
-        
-        next_btn.pack()
+        next_btn.grid(row=0, column=1, padx=10)
+
+        # Quit Quiz Button
+        quit_btn = tk.Button(
+            nav_frame,
+            text="🚪 Quit Quiz",
+            font=("Arial", 12),
+            bg="#e67e22",
+            fg="white",
+            command=self.confirm_quit_quiz,
+            padx=15,
+            pady=8
+        )
+        quit_btn.grid(row=0, column=2, padx=10)
     
     def next_question(self):
         """Move to next question"""
@@ -478,6 +507,17 @@ class LearnAnywhereApp:
         
         self.current_question_index += 1
         self.show_quiz_question()
+    
+    def previous_question(self):
+        """Go to the previous question"""
+        if self.current_question_index > 0:
+            self.current_question_index -= 1
+            self.show_quiz_question()
+    
+    def confirm_quit_quiz(self):
+        """Ask user before quitting the quiz"""
+        if messagebox.askyesno("Quit Quiz?", "Are you sure you want to quit this quiz? Your progress will be lost."):
+            self.show_subject_selection()
     
     def finish_quiz(self):
         """Finish quiz and show results"""
@@ -577,7 +617,6 @@ class LearnAnywhereApp:
         return_btn.pack(pady=30)
     
     # ==================== STUDY MODE ====================
-    
     def show_study_mode(self):
         self.clear_screen()
         title_label = tk.Label(
@@ -655,7 +694,6 @@ class LearnAnywhereApp:
             bg="#f0f8ff"
         ).pack(pady=20)
         
-        # 🔧 Fixed: Look for subject-specific file in grade folder
         file_path = f"study_mode/flashcards/{self.student_grade.lower().replace(' ', '_')}/{subject}.csv"
         
         try:
@@ -718,6 +756,7 @@ class LearnAnywhereApp:
             scrollbar.pack(side="right", fill="y")
         
         self.add_back_button(self.show_flashcards_choice)
+
     def show_notes_choice(self):
         self.clear_screen()
         tk.Label(
