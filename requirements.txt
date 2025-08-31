@@ -1,5 +1,5 @@
 flet
-sqlite3-binary
+sqlite3
 csv
 datetime
 random
