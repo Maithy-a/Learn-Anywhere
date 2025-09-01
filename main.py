@@ -500,26 +500,28 @@ class LearnAnywhereApp:
         self.page.update()
 
     def confirm_quit_quiz(self, e=None):
-        def close(e):
-            dialog.open = False
+        """Show confirmation dialog before quitting quiz"""
+        def close_dialog(e):
+            self.page.dialog.open = False
             self.page.update()
 
         def quit_quiz(e):
-            close(None)
-            self.navigate_back()
+            close_dialog(None)
+            self.navigate_back()  # Go back to subject selection
 
-        dialog = ft.AlertDialog(
+        # Create and show dialog
+        self.page.dialog = ft.AlertDialog(
             modal=True,
             title=ft.Text("Quit Quiz?"),
             content=ft.Text("Your progress will be lost."),
             actions=[
-                ft.TextButton("Cancel", on_click=close),
+                ft.TextButton("Cancel", on_click=close_dialog),
                 ft.TextButton("Quit", on_click=quit_quiz, style=ft.ButtonStyle(color=ft.Colors.RED))
-            ]
+            ],
+            actions_alignment=ft.MainAxisAlignment.END
         )
-        self.page.dialog = dialog
-        dialog.open = True
-        self.page.update()
+        self.page.dialog.open = True
+        self.page.update()  # Critical: Trigger UI update
 
     def export_results(self, e=None):
         cursor = self.conn.cursor()
@@ -544,17 +546,238 @@ class LearnAnywhereApp:
         self.show_snackbar(f"Results saved to {filename}", ft.Colors.GREEN)
 
     def show_study_mode(self, e=None):
+        """Show subject selection for flashcards and notes"""
         self.page.controls.clear()
-        self.page.appbar = self.create_app_bar("Study Mode")
-        self.page.add(ft.Container(ft.Text("Study mode coming soon!"), padding=20))
+        self.page.appbar = self.create_app_bar("Study Mode", show_back=True)
+
+        # Get subjects for current grade
+        subjects = self.get_subjects_for_grade(self.student_grade)
+
+        # Main container
+        content = ft.Column(alignment=ft.MainAxisAlignment.START, scroll=ft.ScrollMode.AUTO)
+        content.controls.append(
+            ft.Text("📚 Study Mode", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+        )
+        content.controls.append(
+            ft.Text(f"Grade {self.student_grade.split()[-1]} | Choose a Subject", size=16, color=ft.Colors.GREY_600)
+        )
+        content.controls.append(ft.Divider(height=20))
+
+        # Tabs: Flashcards | Notes
+        tabs = ft.Tabs(
+            selected_index=0,
+            indicator_color=ft.Colors.BLUE_600,
+            label_color=ft.Colors.BLUE_600,
+            unselected_label_color=ft.Colors.GREY_600,
+            tabs=[
+                ft.Tab(text="🔤 Flashcards"),
+                ft.Tab(text="📝 Notes")
+            ]
+        )
+
+        # Flashcards Tab: Subject Grid
+        flashcards_view = ft.Column([], scroll=ft.ScrollMode.AUTO)
+        notes_view = ft.Column([], scroll=ft.ScrollMode.AUTO)
+
+        for emoji, subject_key in subjects:
+            subject_name = subject_key.replace("_", " ").title()
+            # Flashcards button
+            fc_btn = ft.ElevatedButton(
+                text=emoji,
+                width=120,
+                height=120,
+                style=ft.ButtonStyle(
+                    bgcolor=ft.Colors.TEAL_50,
+                    color=ft.Colors.BLUE_800,
+                    text_style=ft.TextStyle(size=16, weight=ft.FontWeight.BOLD)
+                ),
+                on_click=lambda e, subj=subject_key: self.show_flashcards(subj)
+            )
+            flashcards_view.controls.append(
+                ft.Container(
+                    content=ft.Column([
+                        fc_btn,
+                        ft.Text(subject_name, size=14, text_align=ft.TextAlign.CENTER)
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=10
+                )
+            )
+
+            # Notes button
+            nt_btn = ft.ElevatedButton(
+                text=emoji,
+                width=120,
+                height=120,
+                style=ft.ButtonStyle(
+                    bgcolor=ft.Colors.INDIGO_50,
+                    color=ft.Colors.BLUE_800,
+                    text_style=ft.TextStyle(size=16, weight=ft.FontWeight.BOLD)
+                ),
+                on_click=lambda e, subj=subject_key: self.show_notes(subj)
+            )
+            notes_view.controls.append(
+                ft.Container(
+                    content=ft.Column([
+                        nt_btn,
+                        ft.Text(subject_name, size=14, text_align=ft.TextAlign.CENTER)
+                    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=10
+                )
+            )
+
+        tabs.tabs[0].content = ft.Container(content=flashcards_view, padding=10)
+        tabs.tabs[1].content = ft.Container(content=notes_view, padding=10)
+
+        content.controls.append(tabs)
+        content.controls.append(
+            ft.ElevatedButton(
+                "🔙 Back to Subjects",
+                style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE),
+                on_click=lambda e: self.navigate_to(self.show_subject_selection)
+            )
+        )
+
+        self.page.add(ft.Container(content=content, expand=True, padding=20))
+        self.page.update()
+
+    def show_flashcards(self, subject_key):
+        """Show flashcards for selected subject"""
+        self.page.controls.clear()
+        self.page.appbar = self.create_app_bar(f"{subject_key.replace('_', ' ').title()} Flashcards", show_back=True)
+
+        content = ft.Column(alignment=ft.MainAxisAlignment.START, scroll=ft.ScrollMode.AUTO)
+        items = []
+
+        grade_num = self.student_grade.lower().replace(" ", "_")
+        file_path = f"study_mode/flashcards/{grade_num}/{subject_key}.csv"
+
+        if not os.path.exists(file_path):
+            content.controls.append(
+                ft.Card(
+                    content=ft.Container(
+                        content=ft.Text(f"No flashcards found for {subject_key.replace('_', ' ').title()}", color=ft.Colors.RED_600, text_align=ft.TextAlign.CENTER),
+                        padding=30
+                    )
+                )
+            )
+        else:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        term = row.get("term", "Unknown")
+                        definition = row.get("definition", "No definition")
+                        items.append((term, definition))
+
+                content.controls.append(
+                    ft.Text(f"🔤 {subject_key.replace('_', ' ').title()}", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+                )
+                content.controls.append(ft.Divider(height=15))
+
+                for i, (term, definition) in enumerate(items):
+                    content.controls.append(
+                        ft.Card(
+                            content=ft.Container(
+                                content=ft.Column([
+                                    ft.Text(term, size=16, weight=ft.FontWeight.BOLD),
+                                    ft.Text(definition, size=14, color=ft.Colors.GREY_700)
+                                ]),
+                                padding=20
+                            ),
+                            elevation=3
+                        )
+                    )
+                    if i < len(items) - 1:
+                        content.controls.append(ft.Divider(height=10))
+
+            except Exception as ex:
+                self.show_snackbar(f"Error: {str(ex)}", ft.Colors.RED)
+
+        content.controls.append(
+            ft.ElevatedButton(
+                "⬅️ Back to Subjects",
+                style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE),
+                on_click=lambda e: self.navigate_to(self.show_study_mode)
+            )
+        )
+
+        self.page.add(ft.Container(content=content, expand=True, padding=20))
+        self.page.update()
+
+    def show_notes(self, subject_key):
+        """Show notes for selected subject (supports _notes.txt suffix)"""
+        self.page.controls.clear()
+        self.page.appbar = self.create_app_bar(f"{subject_key.replace('_', ' ').title()} Notes", show_back=True)
+
+        content = ft.Column(alignment=ft.MainAxisAlignment.START, scroll=ft.ScrollMode.AUTO)
+
+        grade_num = self.student_grade.lower().replace(" ", "_")
+        base_path = f"study_mode/notes/{grade_num}/{subject_key}"
+        
+        # Try both filename formats
+        possible_files = [
+            f"{base_path}_notes.txt",
+            f"{base_path}.txt"
+        ]
+        
+        file_path = None
+        for path in possible_files:
+            if os.path.exists(path):
+                file_path = path
+                break
+
+        if not file_path:
+            content.controls.append(
+                ft.Card(
+                    content=ft.Container(
+                        content=ft.Text(f"No notes found for {subject_key.replace('_', ' ').title()}", color=ft.Colors.RED_600, text_align=ft.TextAlign.CENTER),
+                        padding=30
+                    )
+                )
+            )
+        else:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    text = f.read()
+
+                content.controls.append(
+                    ft.Text(f"📝 {subject_key.replace('_', ' ').title()}", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700)
+                )
+                content.controls.append(ft.Divider(height=15))
+
+                content.controls.append(
+                    ft.Card(
+                        content=ft.Container(
+                            content=ft.Markdown(text, selectable=True, extension_set=ft.MarkdownExtensionSet.GITHUB_WEB),
+                            padding=20
+                        ),
+                        elevation=3
+                    )
+                )
+
+            except Exception as ex:
+                self.show_snackbar(f"Error loading notes: {str(ex)}", ft.Colors.RED)
+
+        content.controls.append(
+            ft.ElevatedButton(
+                "⬅️ Back to Subjects",
+                style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE),
+                on_click=lambda e: self.navigate_to(self.show_study_mode)
+            )
+        )
+
+        self.page.add(ft.Container(content=content, expand=True, padding=20))
         self.page.update()
 
 
 def main(page: ft.Page):
-    # Ensure folders exist
-    for folder in ["data"] + \
-                  [f"quizzes/grade_{i}" for i in range(1, 10)] + \
-                  [f"study_mode/notes/grade_{i}" for i in range(1, 10)]:
+    # Ensure all required folders exist
+    folders = ["data"]
+    for i in range(1, 10):
+        folders.append(f"quizzes/grade_{i}")
+        folders.append(f"study_mode/flashcards/grade_{i}")
+        folders.append(f"study_mode/notes/grade_{i}")
+    for folder in folders:
         os.makedirs(folder, exist_ok=True)
     LearnAnywhereApp(page)
 
