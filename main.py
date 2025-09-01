@@ -139,7 +139,7 @@ class LearnAnywhereApp:
             self.navigate_to(self.show_subject_selection)
 
         start_button = ft.ElevatedButton(
-            text="🚀 Start Learning!",
+            text="Start Learning!",
             width=400,
             height=50,
             style=ft.ButtonStyle(
@@ -153,7 +153,7 @@ class LearnAnywhereApp:
         content = ft.Container(
             content=ft.Column([
                 ft.Container(height=50),
-                ft.Text("🎓 LearnAnywhere-CBC", size=36, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700, text_align=ft.TextAlign.CENTER),
+                ft.Text("LearnAnywhere-CBC", size=36, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_700, text_align=ft.TextAlign.CENTER),
                 ft.Text("Kenya's CBC Curriculum | Offline Learning for All", size=16, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
                 ft.Container(height=40),
                 ft.Card(
@@ -262,7 +262,7 @@ class LearnAnywhereApp:
         options_row = ft.Row([
             ft.ElevatedButton("💡 Study Mode", style=ft.ButtonStyle(bgcolor=ft.Colors.TEAL_600, color=ft.Colors.WHITE), on_click=lambda e: self.navigate_to(self.show_study_mode)),
             ft.ElevatedButton("📤 Export Results", style=ft.ButtonStyle(bgcolor=ft.Colors.PURPLE_600, color=ft.Colors.WHITE), on_click=lambda e: self.export_results()),
-            ft.ElevatedButton("🚪 Logout", style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE), on_click=lambda e: self.show_login_screen())
+            ft.ElevatedButton("Logout", style=ft.ButtonStyle(bgcolor=ft.Colors.RED_700, color=ft.Colors.WHITE), on_click=lambda e: self.show_login_screen())
         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
 
         content = ft.Column([
