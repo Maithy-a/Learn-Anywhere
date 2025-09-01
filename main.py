@@ -359,12 +359,12 @@ class LearnAnywhereApp:
             self.confirm_quit_quiz()
 
         buttons = [
-            ft.ElevatedButton("🚪 Quit Quiz", on_click=quit_click, style=ft.ButtonStyle(bgcolor=ft.Colors.ORANGE_600, color=ft.Colors.WHITE))
+            ft.ElevatedButton("Quit Quiz", icon="exit_to_app", on_click=quit_click, style=ft.ButtonStyle(bgcolor=ft.Colors.RED_300, color=ft.Colors.WHITE))
         ]
         if self.current_question_index > 0:
-            buttons.insert(0, ft.ElevatedButton("🔙 Previous", on_click=prev_click, style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE)))
+            buttons.insert(0, ft.ElevatedButton("Previous", icon="arrow_back", on_click=prev_click, style=ft.ButtonStyle(bgcolor=ft.Colors.GREY_600, color=ft.Colors.WHITE)))
         if self.current_question_index < len(self.quiz_questions) - 1:
-            buttons.insert(0, ft.ElevatedButton("Next ➡️", on_click=next_click, style=ft.ButtonStyle(bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE)))
+            buttons.insert(0, ft.ElevatedButton("Next", icon="arrow_forward", on_click=next_click, style=ft.ButtonStyle(bgcolor=ft.Colors.GREEN_600, color=ft.Colors.WHITE)))
         else:
             buttons.insert(0, ft.ElevatedButton("Finish Quiz 🏁", on_click=next_click, style=ft.ButtonStyle(bgcolor=ft.Colors.RED_600, color=ft.Colors.WHITE)))
 
