@@ -9,8 +9,8 @@ Offline-first learning app built with **Next.js 15**, aligned with **SDG 4 (Qual
 
 ```bash
 # Clone repo
-git clone https://github.com/Maithy-a/v0-learn-anywhere.git
-cd v0-learn-anywhere-pwa
+git clone https://github.com/Vyonavee/Learn-Anywhere.git
+cd Learn-Anywhere
 
 # Install dependencies
 npm install
